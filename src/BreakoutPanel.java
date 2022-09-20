@@ -14,7 +14,7 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	
 	static final long serialVersionUID = 2L;
 
-	private boolean gameRunning = true;
+	private boolean gameRunning = false;
 	private int livesLeft = 3;
 	private String screenMessage = "";
 	private Ball ball;
@@ -28,11 +28,15 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		
 		Timer timer = new Timer(5, this);
 		timer.start();
-		
-		// TODO: Create a new ball object and assign it to the appropriate variable
-		// TODO: Create a new paddle object and assign it to the appropriate variable
-		// TODO: Create a new bricks array (Use Settings.TOTAL_BRICKS)
-		// TODO: Call the createBricks() method
+
+	    // Create a new ball object and assign it to the appropriate variable
+		ball = new Ball();
+		// Create a new paddle object and assign it to the appropriate variable
+		paddle = new Paddle();
+		// Create a new bricks array (Use Settings.TOTAL_BRICKS)
+		bricks = new Brick[Settings.TOTAL_BRICKS];
+		// Call the createBricks() method
+		createBricks();
 	}
 	
 	private void createBricks() {
@@ -51,24 +55,32 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	}
 	
 	private void paintBricks(Graphics g) {
-		// TODO: Loop through the bricks and call the paint() method
+		// Loop through the bricks and call the paint() method
+		for(int i = 0; i < Settings.TOTAL_BRICKS; i++){
+			if(!bricks[i].isBroken()){
+				bricks[i].paint(g);
+			}
+		}
+
 	}
 	
 	private void update() {
 		if(gameRunning) {
-			// TODO: Update the ball and paddle
+			ball.update();
 			collisions();
 			repaint();
 		}
 	}
 	
 	private void gameOver() {
-		// TODO: Set screen message
+		// Set screen message
+		screenMessage = "Game Over";
 		stopGame();
 	}
 	
 	private void gameWon() {
-		// TODO: Set screen message
+		// Set screen message
+		screenMessage = "You Won";
 		stopGame();
 	}
 	
@@ -100,6 +112,7 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 				break;
 			}
 		}
+
 		if(!bricksLeft) {
 			gameWon();
 			return;
@@ -145,7 +158,6 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	@Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         ball.paint(g);
         paddle.paint(g);
         paintBricks(g);
@@ -164,11 +176,22 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO: Set the velocity of the paddle depending on whether the player is pressing left or right
+		if(e.getKeyCode() == KeyEvent.VK_RIGHT && paddle.x < (getWidth() - paddle.width)){
+			paddle.x +=15;
+		}
+		if(e.getKeyCode() == KeyEvent.VK_LEFT && paddle.x > 0){
+			paddle.x -=15;
+		}
+		//start the game
+		if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			gameRunning = true;
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO: Set the velocity of the paddle after the player has released the keys
+
 	}
 
 	@Override
