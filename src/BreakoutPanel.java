@@ -1,5 +1,4 @@
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -15,11 +14,13 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	static final long serialVersionUID = 2L;
 
 	private boolean gameRunning = false;
-	private int livesLeft = 3;
+	private int livesLeft = Settings.TOTAL_LIVES;
 	private String screenMessage = "";
 	private Ball ball;
 	private Paddle paddle;
 	private Brick bricks[];
+
+	private Sprite lives[];
 	
 	public BreakoutPanel(Breakout game) {
 		
@@ -29,14 +30,19 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		Timer timer = new Timer(5, this);
 		timer.start();
 
+		// Create a lives
+		lives = new Sprite[Settings.TOTAL_LIVES];
+		// Call the createLives() method
+		createLives();
 	    // Create a new ball object and assign it to the appropriate variable
 		ball = new Ball();
 		// Create a new paddle object and assign it to the appropriate variable
 		paddle = new Paddle();
-		// Create a new bricks array (Use Settings.TOTAL_BRICKS)
+		// Create a new bricks array
 		bricks = new Brick[Settings.TOTAL_BRICKS];
 		// Call the createBricks() method
 		createBricks();
+
 	}
 	
 	private void createBricks() {
@@ -53,15 +59,29 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 			y_space = 0;
 		}
 	}
-	
+
+
+	private void createLives() {
+		int x_space = 10;
+		for(int counter  = 0; counter  < livesLeft; counter ++) {
+				lives[counter] = new Sprite();
+				lives[counter].setX(x_space);
+				lives[counter].setY(Settings.WINDOW_HEIGHT - 70);
+				x_space += Settings.LIVES_WIDTH + 5;
+		}
+	}
+
 	private void paintBricks(Graphics g) {
-		// Loop through the bricks and call the paint() method
+		// Loop through the bricks
 		for(int i = 0; i < Settings.TOTAL_BRICKS; i++){
 			if(!bricks[i].isBroken()){
 				bricks[i].paint(g);
 			}
 		}
-
+		// Loop through the lives left
+		for(int i = 0; i < livesLeft; i++){
+				lives[i].paint(g);
+		}
 	}
 	
 	private void update() {
@@ -93,6 +113,7 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		if(ball.y > 450) {
 			// Game over
 			livesLeft--;
+			System.out.printf(String.valueOf(livesLeft));
 			if(livesLeft <= 0) {
 				gameOver();
 				return;
@@ -164,6 +185,7 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
         
         // Draw lives left
         // TODO: Draw lives left in the top left hand corner
+
         
         // Draw screen message
         if(screenMessage != null) {
@@ -184,7 +206,16 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		}
 		//start the game
 		if(e.getKeyCode() == KeyEvent.VK_ENTER){
-			gameRunning = true;
+			if(!gameRunning){
+				ball.resetPosition();
+				paddle.resetPosition();
+				livesLeft = Settings.TOTAL_LIVES;
+				screenMessage = "";
+				createBricks();
+				createLives();
+				gameRunning = true;
+			}
+
 		}
 	}
 

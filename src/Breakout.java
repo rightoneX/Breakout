@@ -11,7 +11,7 @@ public class Breakout extends JFrame{
 	public Breakout() {
 
 		this.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH,Settings.WINDOW_HEIGHT ));
-		this.setTitle("Breakout");
+		this.setTitle(Settings.WINDOW_NAME);
 		this.setBackground(Color.LIGHT_GRAY);
 		this.pack();
 		this.setResizable(false);
